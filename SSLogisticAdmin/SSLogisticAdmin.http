@@ -1,0 +1,6 @@
+@SSLogisticAdmin_HostAddress = http://localhost:5234
+
+GET {{SSLogisticAdmin_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

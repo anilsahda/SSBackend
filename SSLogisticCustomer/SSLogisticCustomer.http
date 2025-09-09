@@ -1,0 +1,6 @@
+@SSLogisticCustomer_HostAddress = http://localhost:5213
+
+GET {{SSLogisticCustomer_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
