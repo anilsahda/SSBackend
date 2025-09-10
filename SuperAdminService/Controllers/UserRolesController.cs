@@ -4,16 +4,16 @@ using SuperAdminService.Data.Entities;
 
 [ApiController]
 [Route("api/[controller]")]
-public class UserRoleController : ControllerBase
+public class UserRolesController : ControllerBase
 {
     private readonly IDynamoDBContext _dbContext;
 
-    public UserRoleController(IDynamoDBContext dbContext)
+    public UserRolesController(IDynamoDBContext dbContext)
     {
         _dbContext = dbContext;
     }
 
-    [HttpPost("assign")]
+    [HttpPost("AssignRole")]
     public async Task<IActionResult> AssignRole([FromBody] UserRole userRole)
     {
         var allUserRoles = await _dbContext.ScanAsync<UserRole>(new List<ScanCondition>()).GetRemainingAsync();
@@ -23,8 +23,8 @@ public class UserRoleController : ControllerBase
         return Ok(userRole);
     }
 
-    [HttpGet("list")]
-    public async Task<IActionResult> GetAllUserRoles()
+    [HttpGet("GetUserRoles")]
+    public async Task<IActionResult> GetUserRoles()
     {
         return Ok(await _dbContext.ScanAsync<UserRole>(new List<ScanCondition>()).GetRemainingAsync());
     }
