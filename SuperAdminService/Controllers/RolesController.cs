@@ -28,4 +28,18 @@ public class RolesController : ControllerBase
     {
         return Ok(await _dbContext.ScanAsync<Role>(new List<ScanCondition>()).GetRemainingAsync());
     }
+
+    [HttpPut("UpdateRole")]
+    public async Task<IActionResult> UpdateRole([FromForm] Role role)
+    {
+        await _dbContext.SaveAsync(role);
+        return Ok("Data updated successfully!");
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteRoleById(int id)
+    {
+        await _dbContext.DeleteAsync<Role>(id);
+        return Ok("Data deleted successfully!");
+    }
 }
