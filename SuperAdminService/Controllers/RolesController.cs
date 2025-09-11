@@ -30,7 +30,7 @@ public class RolesController : ControllerBase
     }
 
     [HttpPut("UpdateRole")]
-    public async Task<IActionResult> UpdateRole([FromForm] Role role)
+    public async Task<IActionResult> UpdateRole([FromBody] Role role)
     {
         await _dbContext.SaveAsync(role);
         return Ok("Data updated successfully!");

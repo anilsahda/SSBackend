@@ -13,8 +13,8 @@ public class UserRolesController : ControllerBase
         _dbContext = dbContext;
     }
 
-    [HttpPost("AssignRole")]
-    public async Task<IActionResult> AssignRole([FromBody] UserRole userRole)
+    [HttpPost("AddUserRole")]
+    public async Task<IActionResult> AddRole([FromBody] UserRole userRole)
     {
         var allUserRoles = await _dbContext.ScanAsync<UserRole>(new List<ScanCondition>()).GetRemainingAsync();
         userRole.Id = allUserRoles.Any() ? allUserRoles.OrderByDescending(ur => ur.Id).First().Id + 1 : 1;
@@ -27,5 +27,19 @@ public class UserRolesController : ControllerBase
     public async Task<IActionResult> GetUserRoles()
     {
         return Ok(await _dbContext.ScanAsync<UserRole>(new List<ScanCondition>()).GetRemainingAsync());
+    }
+
+    [HttpPut("UpdateUserRole")]
+    public async Task<IActionResult> UpdateRole([FromBody] UserRole userRole)
+    {
+        await _dbContext.SaveAsync(userRole);
+        return Ok("Data updated successfully!");
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteUserRoleById(int id)
+    {
+        await _dbContext.DeleteAsync<UserRole>(id);
+        return Ok("Data deleted successfully!");
     }
 }

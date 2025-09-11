@@ -27,23 +27,21 @@ namespace SuperAdminService.Controllers
         public async Task<IActionResult> Login([FromBody] LoginRequestDto loginDto)
         {
             // find user by email + password
-            var users = await _dbContext.ScanAsync<User>(
-                new List<ScanCondition>
-                {
-            new ScanCondition("Email", ScanOperator.Equal, loginDto.Email),
-            new ScanCondition("Password", ScanOperator.Equal, loginDto.Password)
-                }).GetRemainingAsync();
+            var users = await _dbContext.ScanAsync<User>(new List<ScanCondition>
+            {
+                new ScanCondition("Email", ScanOperator.Equal, loginDto.Email),
+                new ScanCondition("Password", ScanOperator.Equal, loginDto.Password)
+            }).GetRemainingAsync();
 
             var user = users.FirstOrDefault();
             if (user == null)
                 return Ok(new { token = "", name = "", role = "", success = "400" }); // user not found
 
             // get userRole mapping
-            var userRoles = await _dbContext.ScanAsync<UserRole>(
-                new List<ScanCondition>
-                {
-            new ScanCondition("UserId", ScanOperator.Equal, user.Id)
-                }).GetRemainingAsync();
+            var userRoles = await _dbContext.ScanAsync<UserRole>(new List<ScanCondition>
+            {
+                new ScanCondition("UserId", ScanOperator.Equal, user.Id)
+            }).GetRemainingAsync();
 
             var userRole = userRoles.FirstOrDefault();
             if (userRole == null)

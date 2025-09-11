@@ -1,5 +1,4 @@
 ﻿using Amazon.DynamoDBv2.DataModel;
-using Amazon.DynamoDBv2.DocumentModel;
 using Microsoft.AspNetCore.Mvc;
 using SuperAdminService.Data.Entities;
 
@@ -23,11 +22,7 @@ namespace SuperAdminService.Controllers
             user.Id = allUsers.Any() ? allUsers.OrderByDescending(r => r.Id).First().Id + 1 : 1;
             await _dbContext.SaveAsync(user);
 
-            return Ok(new
-            {
-                Message = "User Registered Successfully",
-                User = user
-            });
+            return Ok(new { Message = "User Registered Successfully", User = user });
         }
 
         [HttpGet("GetUsers")]
@@ -37,7 +32,7 @@ namespace SuperAdminService.Controllers
         }
 
         [HttpPut("UpdateUser")]
-        public async Task<IActionResult> UpdateUser([FromForm] User user)
+        public async Task<IActionResult> UpdateUser([FromBody] User user)
         {
             await _dbContext.SaveAsync(user);
             return Ok("Data updated successfully!");
