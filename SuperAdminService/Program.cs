@@ -6,13 +6,9 @@ using Amazon;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
-
 builder.Services.AddControllers();
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
 builder.Services.AddSingleton<IAmazonDynamoDB>(sp =>
 {
     var awsOptions = builder.Configuration.GetSection("AWS");
@@ -25,6 +21,16 @@ builder.Services.AddSingleton<IAmazonDynamoDB>(sp =>
 
 builder.Services.AddSingleton<IDynamoDBContext, DynamoDBContext>();
 
+//CORS Service
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 
 builder.Services.AddAuthentication("JwtBearer")
     .AddJwtBearer("JwtBearer", options =>
@@ -35,27 +41,23 @@ builder.Services.AddAuthentication("JwtBearer")
             ValidateAudience = false,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
         };
     });
 
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
-
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
+//CORS Middleware
+app.UseCors("AllowAll");
 app.UseHttpsRedirection();
 app.UseAuthentication();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();

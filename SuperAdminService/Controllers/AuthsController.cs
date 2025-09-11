@@ -11,49 +11,15 @@ namespace SuperAdminService.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class AuthController : ControllerBase
+    public class AuthsController : ControllerBase
     {
         private readonly IDynamoDBContext _dbContext;
         private readonly IConfiguration _config;
 
-        public AuthController(IDynamoDBContext dbContext, IConfiguration config)
+        public AuthsController(IDynamoDBContext dbContext, IConfiguration config)
         {
             _dbContext = dbContext;
             _config = config;
-        }
-
-        // ✅ Register User
-        [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] User user)
-        {
-            // check if email already exists
-            var existingUsers = await _dbContext.ScanAsync<User>(
-                new List<ScanCondition>
-                {
-                    new ScanCondition("Email", ScanOperator.Equal, user.Email)
-                }).GetRemainingAsync();
-
-            if (existingUsers.Any())
-                return BadRequest("User already exists");
-
-            // get max Id
-            var allUsers = await _dbContext.ScanAsync<User>(new List<ScanCondition>()).GetRemainingAsync();
-            int nextId = 1;
-            if (allUsers.Any())
-            {
-                nextId = allUsers.OrderByDescending(u => u.Id).FirstOrDefault().Id + 1;
-            }
-
-            // assign numeric ID
-            user.Id = nextId;
-
-            await _dbContext.SaveAsync(user);
-
-            return Ok(new
-            {
-                Message = "User registered successfully",
-                User = user
-            });
         }
 
         // ✅ Login User
@@ -61,23 +27,21 @@ namespace SuperAdminService.Controllers
         public async Task<IActionResult> Login([FromBody] LoginRequestDto loginDto)
         {
             // find user by email + password
-            var users = await _dbContext.ScanAsync<User>(
-                new List<ScanCondition>
-                {
-            new ScanCondition("Email", ScanOperator.Equal, loginDto.Email),
-            new ScanCondition("Password", ScanOperator.Equal, loginDto.Password)
-                }).GetRemainingAsync();
+            var users = await _dbContext.ScanAsync<User>(new List<ScanCondition>
+            {
+                new ScanCondition("Email", ScanOperator.Equal, loginDto.Email),
+                new ScanCondition("Password", ScanOperator.Equal, loginDto.Password)
+            }).GetRemainingAsync();
 
             var user = users.FirstOrDefault();
             if (user == null)
                 return Ok(new { token = "", name = "", role = "", success = "400" }); // user not found
 
             // get userRole mapping
-            var userRoles = await _dbContext.ScanAsync<UserRole>(
-                new List<ScanCondition>
-                {
-            new ScanCondition("UserId", ScanOperator.Equal, user.Id)
-                }).GetRemainingAsync();
+            var userRoles = await _dbContext.ScanAsync<UserRole>(new List<ScanCondition>
+            {
+                new ScanCondition("UserId", ScanOperator.Equal, user.Id)
+            }).GetRemainingAsync();
 
             var userRole = userRoles.FirstOrDefault();
             if (userRole == null)
@@ -103,7 +67,7 @@ namespace SuperAdminService.Controllers
             {
                 token = jwt,
                 user = user,     // full user details
-                role = role,     // role object
+                role = role.Name,     // role name
                 success = "200"
             });
         }

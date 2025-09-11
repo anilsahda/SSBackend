@@ -4,16 +4,16 @@ using SuperAdminService.Data.Entities;
 
 [ApiController]
 [Route("api/[controller]")]
-public class RoleController : ControllerBase
+public class RolesController : ControllerBase
 {
     private readonly IDynamoDBContext _dbContext;
 
-    public RoleController(IDynamoDBContext dbContext)
+    public RolesController(IDynamoDBContext dbContext)
     {
         _dbContext = dbContext;
     }
 
-    [HttpPost("add")]
+    [HttpPost("AddRole")]
     public async Task<IActionResult> AddRole([FromBody] Role role)
     {
         var allRoles = await _dbContext.ScanAsync<Role>(new List<ScanCondition>()).GetRemainingAsync();
@@ -23,9 +23,23 @@ public class RoleController : ControllerBase
         return Ok(role);
     }
 
-    [HttpGet("list")]
-    public async Task<IActionResult> GetAllRoles()
+    [HttpGet("GetRoles")]
+    public async Task<IActionResult> GetRoles()
     {
         return Ok(await _dbContext.ScanAsync<Role>(new List<ScanCondition>()).GetRemainingAsync());
+    }
+
+    [HttpPut("UpdateRole")]
+    public async Task<IActionResult> UpdateRole([FromBody] Role role)
+    {
+        await _dbContext.SaveAsync(role);
+        return Ok("Data updated successfully!");
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteRoleById(int id)
+    {
+        await _dbContext.DeleteAsync<Role>(id);
+        return Ok("Data deleted successfully!");
     }
 }
