@@ -17,5 +17,9 @@ namespace DigitalLibraryAdminService.Data.Entities
         public decimal Price {  get; set; }
         [DynamoDBProperty]
         public int Quantity { get; set; }
+        [DynamoDBProperty]
+        public int PublicationId { get; set; }
+        [DynamoDBProperty]
+        public string Details { get; set; }
     }
 }
