@@ -12,7 +12,7 @@ namespace DigitalLibraryAdminService.Data.Entities
         [DynamoDBProperty]
         public string Author { get; set; }
         [DynamoDBProperty]
-        public string Branch{ get; set; }
+        public int BranchId{ get; set; }
         [DynamoDBProperty]
         public decimal Price {  get; set; }
         [DynamoDBProperty]
